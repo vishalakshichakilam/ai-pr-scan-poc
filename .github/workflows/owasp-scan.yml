@@ -1,0 +1,27 @@
+name: OWASP Top 10 AI Scan Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate PR Diff
+        run: |
+          git fetch origin main
+          git diff origin/main...HEAD > pr.diff
+
+      - name: Run OWASP Scan
+        run: |
+          python3 ai_owasp_scan.py pr.diff
+
+      - name: Print Scan Result
+        if: always()
+        run: |
+          cat result.txt
